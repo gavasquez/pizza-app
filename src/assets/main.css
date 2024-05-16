@@ -1,0 +1,6 @@
+body,
+html {
+  margin: 0;
+  background-image: url('../../public/assets/background-pizza.jpg');
+  background-size: cover;
+}
