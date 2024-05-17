@@ -65,7 +65,7 @@
                     </ul>
                   </p>
                   <p class="card-text text-center">
-                    <RouterLink to="/products" class="btn btn-warning">Ver Productos</RouterLink>
+                    <button class="btn btn-warning" @click="navegarProducto">Ver Productos</button>
                   </p>
                 </div>
               </div>
@@ -131,6 +131,8 @@
 import { reactive, ref } from 'vue';
 import { v4 as uuidV4 } from "uuid";
 import type { Cliente } from '../interfaces/cliente.interface';
+import { useCounterStore } from '@/pinia/useCliente';
+import { useRouter } from 'vue-router';
 
 const clientes = ref<Cliente[]>([
   {
@@ -167,6 +169,14 @@ const formCliente = reactive({
   direccion: ''
 });
 
+const useCliente = useCounterStore();
+const router = useRouter();
+
+const navegarProducto = () => {
+  useCliente.cliente = cliente.value;
+  router.push('/products');
+}
+
 const onSearchCliente = () => {
 
   if (!inputTelefono.value) {
@@ -175,6 +185,7 @@ const onSearchCliente = () => {
   }
 
   cliente.value = clientes.value.find((client) => client.telefono === inputTelefono.value);
+  
 
   if (!cliente.value) {
     alert('No existe el cliente, por favor validar o crear un nuevo cliente');
