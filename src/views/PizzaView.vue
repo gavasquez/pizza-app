@@ -1,5 +1,5 @@
 <template>
-  <div class="container bg-white text-center p-4 rounded-2 " style="height:92vh; margin-top: 2%;">
+  <div class="container bg-white text-center p-4 rounded-2 " style="height:100vh; margin-top: 2%;">
     <h1 class="text-center">Bienvenidos a PizzaApp</h1>
     <hr />
     <div class="container">
@@ -8,7 +8,9 @@
           <h2>Clientes</h2>
         </div>
         <div class="col-10 text-end">
-          <button class="btn btn-info">Crear Cliente</button>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Crear Cliente
+          </button>
         </div>
       </div>
 
@@ -79,9 +81,55 @@
       </template>
     </div>
   </div>
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Crear Cliente</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form @submit.prevent="crearCliente">
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Nombre</label>
+              <input 
+              v-model="formCliente.nombre"
+              type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Ingresar nombre">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Email</label>
+              <input 
+              v-model="formCliente.email"
+              type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Ingresar email">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Telefono</label>
+              <input 
+              v-model="formCliente.telefono"
+              type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Ingresar Telefono">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Direccion</label>
+              <input 
+              v-model="formCliente.direccion"
+              type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Ingresar direccion">
+            </div>
+            <div class="text-center ">
+              <button type="submit" class="btn btn-primary">Crear</button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
+import { v4 as uuidV4 } from "uuid";
 import type { Cliente } from '../interfaces/cliente.interface';
 
 const clientes = ref<Cliente[]>([
@@ -110,18 +158,47 @@ const clientes = ref<Cliente[]>([
 
 const cliente = ref<Cliente>();
 
-const inputTelefono = ref('');
+const inputTelefono = ref();
+
+const formCliente = reactive({
+  nombre: '',
+  email: '',
+  telefono: 0,
+  direccion: ''
+});
 
 const onSearchCliente = () => {
-  if (inputTelefono.value === '') {
+
+  if (!inputTelefono.value) {
     alert('Por favor ingrese un valor.');
     return;
   }
 
   cliente.value = clientes.value.find((client) => client.telefono === inputTelefono.value);
 
-  if (!cliente) {
+  if (!cliente.value) {
     alert('No existe el cliente, por favor validar o crear un nuevo cliente');
   }
 };
+
+const crearCliente = () => {
+  if(formCliente.nombre === '' || formCliente.email === '' || !formCliente.telefono || formCliente.direccion === '') {
+    alert('Por favor revisar, algunos campos estan vacios');
+    return;
+  }
+  const newCliente = {
+    id: uuidV4(),
+    ...formCliente,
+  }
+
+  clientes.value.push(newCliente);
+  
+  alert(`Usuario ${formCliente.nombre} creado correctamente`);
+
+  formCliente.nombre = '';
+  formCliente.email = '';
+  formCliente.telefono = 0;
+  formCliente.direccion = '';
+
+}
 </script>
